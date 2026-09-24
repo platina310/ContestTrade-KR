@@ -35,6 +35,10 @@ CREATE TABLE IF NOT EXISTS index_prices (
 """
 
 
+def f(x):
+    return None if x is None or x != x else float(x)
+
+
 def fmt_dates(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df.index = pd.to_datetime(df.index).strftime("%Y-%m-%d")
@@ -45,8 +49,8 @@ def collect_ticker(con, t, start, end):
     ohlcv = fmt_dates(stock.get_market_ohlcv_by_date(start, end, t))
     cap = fmt_dates(stock.get_market_cap_by_date(start, end, t))
     rows = [
-        (t, d, r["시가"], r["고가"], r["저가"], r["종가"], r["거래량"], r["거래대금"],
-         cap["시가총액"].get(d))
+        (t, d, f(r.get("시가")), f(r.get("고가")), f(r.get("저가")), f(r.get("종가")), f(r.get("거래량")), f(r.get("거래대금")),
+         f(cap["시가총액"].get(d)))
         for d, r in ohlcv.iterrows()
     ]
     con.executemany("INSERT OR REPLACE INTO prices VALUES (?,?,?,?,?,?,?,?,?)", rows)
@@ -54,7 +58,7 @@ def collect_ticker(con, t, start, end):
     flow = fmt_dates(stock.get_market_trading_value_by_date(start, end, t))
     # 컬럼: 기관합계, 기타법인, 개인, 외국인합계, 전체
     rows = [
-        (t, d, r["외국인합계"], r["기관합계"], r["개인"], r["기타법인"], r["전체"])
+        (t, d, f(r.get("외국인합계")), f(r.get("기관합계")), f(r.get("개인")), f(r.get("기타법인")), f(r.get("전체")))
         for d, r in flow.iterrows()
     ]
     con.executemany("INSERT OR REPLACE INTO flows VALUES (?,?,?,?,?,?,?)", rows)
@@ -64,7 +68,7 @@ def collect_ticker(con, t, start, end):
 
 def collect_index(con, code, start, end):
     df = fmt_dates(stock.get_index_ohlcv_by_date(start, end, code))
-    rows = [(code, d, r["시가"], r["고가"], r["저가"], r["종가"], r["거래량"], r["거래대금"])
+    rows = [(code, d, f(r.get("시가")), f(r.get("고가")), f(r.get("저가")), f(r.get("종가")), f(r.get("거래량")), f(r.get("거래대금")))
             for d, r in df.iterrows()]
     con.executemany("INSERT OR REPLACE INTO index_prices VALUES (?,?,?,?,?,?,?,?)", rows)
     con.commit()
@@ -85,7 +89,7 @@ def main():
     con.executescript(SCHEMA)
 
     for r in uni:
-        t = r["ticker"].zfill(6)
+        t = f(r.get("ticker")).zfill(6)
         n = collect_ticker(con, t, args.start, args.end)
         print(f"{t} {r['name_kr']}: {n} days")
         time.sleep(0.5)                       # KRX 부하 조절
