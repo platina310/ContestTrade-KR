@@ -17,4 +17,7 @@ rich
 tabulate
 akshare
 crawl4ai
-lightgbm
+lightgbmfinance-datareader
+telethon
+striprtf
+pykrx

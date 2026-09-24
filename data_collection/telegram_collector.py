@@ -57,6 +57,12 @@ CREATE INDEX IF NOT EXISTS idx_messages_date ON messages (channel, date_utc);
 
 
 def load_secrets():
+    import os
+    env = {"api_id": os.environ.get("TG_API_ID"), "api_hash": os.environ.get("TG_API_HASH"),
+           "phone": os.environ.get("TG_PHONE")}
+    if all(env.values()):                     # .envrc(direnv) 우선 — 저장소 파일에 키를 두지 않음
+        env["api_id"] = int(env["api_id"])
+        return env
     if not SECRETS_PATH.exists():
         sys.exit(
             f"[중단] {SECRETS_PATH} 가 없습니다.\n"

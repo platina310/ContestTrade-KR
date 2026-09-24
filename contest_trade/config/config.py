@@ -30,6 +30,12 @@ class ProjectConfig:
         for k in config:
             setattr(self, k, config[k])
         
+        # API 키는 저장소 밖(환경변수)에서 — config 파일의 api_key가 비어 있으면 OPENAI_API_KEY 사용
+        for block in ("llm", "llm_thinking", "vlm"):
+            b = getattr(self, block, None)
+            if isinstance(b, dict) and b.get("model_name") and not b.get("api_key"):
+                b["api_key"] = os.environ.get("OPENAI_API_KEY", "")
+
         # Store the market type for reference
         self.market_type = market_type
 

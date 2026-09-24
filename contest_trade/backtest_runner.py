@@ -80,4 +80,4 @@ if __name__ == "__main__":
     if len(sys.argv) < 3:
         sys.exit("사용법: CONTEST_TRADE_MARKET=KR-Stock python backtest_runner.py <시작일> <종료일>")
     os.environ.setdefault("CONTEST_TRADE_MARKET", "KR-Stock")
-    asyncio.run(run_replay(sys.argv[1], sys.argv[2]))
+    asyncio.run(run_replay(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else "08:30:00"))
