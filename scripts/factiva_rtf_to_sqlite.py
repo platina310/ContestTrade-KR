@@ -10,8 +10,12 @@ Factiva RTF → SQLite 적재기 (파일럿 D11 경제지 뉴스 소스)
   factiva_webnews  본문 없는 Web News (연합인포맥스: 시각·요약만)
   articles (VIEW)  PR #1 어댑터(kr_factiva_news.py) 호환용 — 같은 DB를 그대로 읽을 수 있음
 
-look-ahead: 한경·매경은 날짜만, 서울경제는 새벽 지면등록 시각 → 세 신문 모두 D일 기사는 D+1 시그널에만.
-            그 규칙은 어댑터에서 적용하고, 여기서는 원본 날짜·시각을 그대로 보존만 한다.
+look-ahead: Factiva의 PD+ET는 실제 KST보다 9시간 늦게 찍혀 있다(ET_SHIFT_HOURS).
+            검증 2026-09-24: 서울경제 "李대통령 삼성·SK 용인·서남권 팹…" 사이트 수정 2026-06-30 18:46 KST
+            → Factiva PD 2026-07-01 / ET 03:46 (정확히 +9h, 날짜도 넘어감).
+            - ET 있는 기사(서울경제 등): pub_dt_kst = PD+ET-9h → 어댑터는 "pub_dt_kst < D 08:30" 규칙
+            - ET 없는 기사(한경·매경): PD만 → D+1 규칙. PD가 늦게 찍히는 쪽이라 누수 없이 보수적
+            원본 pub_date·pub_time은 그대로 보존한다.
 
 사용법
   python scripts/factiva_rtf_to_sqlite.py data/factiva/2026-05 [data/factiva/2026-06 ...] [--db PATH]
@@ -25,7 +29,7 @@ import re
 import shutil
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from striprtf.striprtf import rtf_to_text
@@ -54,6 +58,7 @@ CREATE TABLE IF NOT EXISTS factiva_news (
     lead        TEXT,               -- LP
     body        TEXT,               -- TD
     word_count  INTEGER,            -- WC
+    pub_dt_kst  TEXT,               -- 'YYYY-MM-DD HH:MM' 실제 KST (ET 있을 때만, PD+ET-9h)
     language    TEXT,               -- LA
     co_codes    TEXT,               -- 'sansel,hyunmo' 소문자 콤마 구분
     ns_codes    TEXT,               -- 뉴스유형 코드 'c151,ncat'
@@ -81,6 +86,7 @@ CREATE TABLE IF NOT EXISTS factiva_webnews (
     source_code TEXT,
     headline    TEXT,
     summary     TEXT,               -- LP (Web News는 본문 없이 요약만)
+    pub_dt_kst  TEXT,               -- PD+ET-9h (Web News에도 같은 보정 적용 — 별도 검증 전)
     co_codes    TEXT,
     ns_codes    TEXT,
     src_file    TEXT,
@@ -95,7 +101,12 @@ CREATE VIEW IF NOT EXISTS articles AS
     FROM factiva_news;
 """
 
-MONTHS_KO = {f"{i}월": i for i in range(1, 13)}
+ET_SHIFT_HOURS = 9   # Factiva PD+ET − 실제 KST (위 docstring 검증 참고)
+NEWS_COLS = ["an", "pub_date", "pub_time", "source", "source_code", "section", "headline", "lead",
+             "body", "word_count", "pub_dt_kst", "language", "co_codes", "ns_codes", "in_codes",
+             "re_codes", "src_file", "ingested_at"]
+WEB_COLS = ["an", "pub_date", "pub_time", "source", "source_code", "headline", "summary",
+            "pub_dt_kst", "co_codes", "ns_codes", "src_file", "ingested_at"]
 
 
 # ---------------------------------------------------------------- 파싱
@@ -158,6 +169,13 @@ def parse_time(s: str):
     return f"{h:02d}:{mi:02d}"
 
 
+def to_kst(pub_date, pub_time):
+    if not pub_time:
+        return None
+    dt = datetime.strptime(f"{pub_date} {pub_time}", "%Y-%m-%d %H:%M") - timedelta(hours=ET_SHIFT_HOURS)
+    return dt.strftime("%Y-%m-%d %H:%M")
+
+
 def codes(field: str):
     return [(c.strip(), n.strip()) for c, n in CODE_NAME.findall(field or "")]
 
@@ -181,6 +199,7 @@ def parse_file(path: Path):
             "an": an,
             "pub_date": pub_date,
             "pub_time": parse_time(cur.get("ET", "")),
+            "pub_dt_kst": to_kst(pub_date, parse_time(cur.get("ET", ""))),
             "source": cur.get("SN", ""),
             "source_code": cur.get("SC", "").strip(),
             "section": cur.get("SE", ""),
@@ -205,6 +224,15 @@ def connect(db: Path):
     db.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db)
     conn.executescript(SCHEMA)
+    # 기존 DB 마이그레이션: pub_dt_kst 컬럼 추가 + 채우기 (재적재 불필요)
+    for tbl in ("factiva_news", "factiva_webnews"):
+        cols = {r[1] for r in conn.execute(f"PRAGMA table_info({tbl})")}
+        if "pub_dt_kst" not in cols:
+            conn.execute(f"ALTER TABLE {tbl} ADD COLUMN pub_dt_kst TEXT")
+        conn.execute(
+            f"UPDATE {tbl} SET pub_dt_kst = strftime('%Y-%m-%d %H:%M', pub_date || ' ' || pub_time, "
+            f"'-{ET_SHIFT_HOURS} hours') WHERE pub_time IS NOT NULL AND pub_dt_kst IS NULL")
+    conn.commit()
     return conn
 
 
@@ -224,18 +252,16 @@ def ingest(folders, db: Path):
             for a in arts:
                 is_web = not a["body"]            # Web News(인포맥스)는 TD 본문이 없음
                 if is_web:
+                    row = dict(a, summary=a["lead"], ingested_at=now)
                     conn.execute(
-                        "INSERT OR IGNORE INTO factiva_webnews VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                        (a["an"], a["pub_date"], a["pub_time"], a["source"], a["source_code"],
-                         a["headline"], a["lead"], a["co_codes"], a["ns_codes"], a["src_file"], now))
+                        f"INSERT OR IGNORE INTO factiva_webnews ({','.join(WEB_COLS)}) "
+                        f"VALUES ({','.join('?' * len(WEB_COLS))})", [row[c] for c in WEB_COLS])
                     n_web += 1
                 else:
+                    row = dict(a, ingested_at=now)
                     conn.execute(
-                        "INSERT OR IGNORE INTO factiva_news VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                        (a["an"], a["pub_date"], a["pub_time"], a["source"], a["source_code"],
-                         a["section"], a["headline"], a["lead"], a["body"], a["word_count"],
-                         a["language"], a["co_codes"], a["ns_codes"], a["in_codes"], a["re_codes"],
-                         a["src_file"], now))
+                        f"INSERT OR IGNORE INTO factiva_news ({','.join(NEWS_COLS)}) "
+                        f"VALUES ({','.join('?' * len(NEWS_COLS))})", [row[c] for c in NEWS_COLS])
                     n_news += 1
                 conn.executemany(
                     "INSERT OR IGNORE INTO factiva_company VALUES (?,?,?,?)",
@@ -256,7 +282,8 @@ def print_stats(conn):
     tagged = conn.execute("SELECT COUNT(*) FROM factiva_news WHERE co_codes != ''").fetchone()[0]
     total = conn.execute("SELECT COUNT(*) FROM factiva_news").fetchone()[0]
     timed = conn.execute("SELECT COUNT(*) FROM factiva_news WHERE pub_time IS NOT NULL").fetchone()[0]
-    print(f"  CO 태깅 {tagged}/{total} ({tagged / max(total, 1):.0%}), 시각(ET) 있음 {timed}건")
+    print(f"  CO 태깅 {tagged}/{total} ({tagged / max(total, 1):.0%}), 시각(ET) 있음 {timed}건 "
+          f"(pub_dt_kst = PD+ET-{ET_SHIFT_HOURS}h)")
     print("  월×매체:")
     for ym, src, n in conn.execute(
             "SELECT substr(pub_date,1,7), COALESCE(NULLIF(source_code,''), source), COUNT(*) "
