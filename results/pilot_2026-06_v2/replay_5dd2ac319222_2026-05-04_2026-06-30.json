@@ -1,0 +1,204 @@
+{
+  "replay_id": "5dd2ac319222",
+  "range": [
+    "2026-05-04",
+    "2026-06-30"
+  ],
+  "runs": [
+    {
+      "trigger": "2026-05-04 08:30:00",
+      "elapsed_s": 0.1,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-06 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 13
+    },
+    {
+      "trigger": "2026-05-07 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-05-08 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-11 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-12 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-13 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 8
+    },
+    {
+      "trigger": "2026-05-14 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-15 08:30:00",
+      "elapsed_s": 0.1,
+      "signals": 13
+    },
+    {
+      "trigger": "2026-05-18 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-19 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-20 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-21 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-22 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-26 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-27 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 7
+    },
+    {
+      "trigger": "2026-05-28 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-29 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-06-01 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 11
+    },
+    {
+      "trigger": "2026-06-02 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-04 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 8
+    },
+    {
+      "trigger": "2026-06-05 08:30:00",
+      "elapsed_s": 0.0,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-08 08:30:00",
+      "elapsed_s": 18.8,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-09 08:30:00",
+      "elapsed_s": 40.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-06-10 08:30:00",
+      "elapsed_s": 65.5,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-06-11 08:30:00",
+      "elapsed_s": 62.9,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-12 08:30:00",
+      "elapsed_s": 93.1,
+      "signals": 11
+    },
+    {
+      "trigger": "2026-06-15 08:30:00",
+      "elapsed_s": 62.8,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-06-16 08:30:00",
+      "elapsed_s": 71.9,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-06-17 08:30:00",
+      "elapsed_s": 41.5,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-18 08:30:00",
+      "elapsed_s": 85.7,
+      "signals": 13
+    },
+    {
+      "trigger": "2026-06-19 08:30:00",
+      "elapsed_s": 57.9,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-22 08:30:00",
+      "elapsed_s": 39.5,
+      "signals": 7
+    },
+    {
+      "trigger": "2026-06-23 08:30:00",
+      "elapsed_s": 86.8,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-06-24 08:30:00",
+      "elapsed_s": 46.8,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-25 08:30:00",
+      "elapsed_s": 90.2,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-06-26 08:30:00",
+      "elapsed_s": 65.8,
+      "signals": 8
+    },
+    {
+      "trigger": "2026-06-29 08:30:00",
+      "elapsed_s": 39.2,
+      "signals": 8
+    },
+    {
+      "trigger": "2026-06-30 08:30:00",
+      "elapsed_s": 94.4,
+      "signals": 11
+    }
+  ]
+}
