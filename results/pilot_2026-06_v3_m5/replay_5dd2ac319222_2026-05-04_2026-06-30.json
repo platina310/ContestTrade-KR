@@ -1,0 +1,204 @@
+{
+  "replay_id": "5dd2ac319222",
+  "range": [
+    "2026-05-04",
+    "2026-06-30"
+  ],
+  "runs": [
+    {
+      "trigger": "2026-05-04 08:30:00",
+      "elapsed_s": 24.9,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-06 08:30:00",
+      "elapsed_s": 21.6,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-07 08:30:00",
+      "elapsed_s": 139.7,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-08 08:30:00",
+      "elapsed_s": 29.3,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-11 08:30:00",
+      "elapsed_s": 62.7,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-05-12 08:30:00",
+      "elapsed_s": 38.2,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-05-13 08:30:00",
+      "elapsed_s": 30.2,
+      "signals": 11
+    },
+    {
+      "trigger": "2026-05-14 08:30:00",
+      "elapsed_s": 50.1,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-15 08:30:00",
+      "elapsed_s": 61.6,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-05-18 08:30:00",
+      "elapsed_s": 29.7,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-19 08:30:00",
+      "elapsed_s": 39.5,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-20 08:30:00",
+      "elapsed_s": 44.4,
+      "signals": 11
+    },
+    {
+      "trigger": "2026-05-21 08:30:00",
+      "elapsed_s": 37.1,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-05-22 08:30:00",
+      "elapsed_s": 47.3,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-26 08:30:00",
+      "elapsed_s": 42.1,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-27 08:30:00",
+      "elapsed_s": 33.3,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-28 08:30:00",
+      "elapsed_s": 45.7,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-05-29 08:30:00",
+      "elapsed_s": 33.5,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-01 08:30:00",
+      "elapsed_s": 36.0,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-06-02 08:30:00",
+      "elapsed_s": 1798.9,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-04 08:30:00",
+      "elapsed_s": 28.1,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-05 08:30:00",
+      "elapsed_s": 27.7,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-06-08 08:30:00",
+      "elapsed_s": 37.0,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-09 08:30:00",
+      "elapsed_s": 59.8,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-06-10 08:30:00",
+      "elapsed_s": 26.8,
+      "signals": 10
+    },
+    {
+      "trigger": "2026-06-11 08:30:00",
+      "elapsed_s": 29.5,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-12 08:30:00",
+      "elapsed_s": 67.6,
+      "signals": 8
+    },
+    {
+      "trigger": "2026-06-15 08:30:00",
+      "elapsed_s": 35.0,
+      "signals": 11
+    },
+    {
+      "trigger": "2026-06-16 08:30:00",
+      "elapsed_s": 52.6,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-17 08:30:00",
+      "elapsed_s": 24.8,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-18 08:30:00",
+      "elapsed_s": 60.7,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-06-19 08:30:00",
+      "elapsed_s": 53.6,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-06-22 08:30:00",
+      "elapsed_s": 36.1,
+      "signals": 12
+    },
+    {
+      "trigger": "2026-06-23 08:30:00",
+      "elapsed_s": 33.0,
+      "signals": 8
+    },
+    {
+      "trigger": "2026-06-24 08:30:00",
+      "elapsed_s": 45.3,
+      "signals": 11
+    },
+    {
+      "trigger": "2026-06-25 08:30:00",
+      "elapsed_s": 23.1,
+      "signals": 7
+    },
+    {
+      "trigger": "2026-06-26 08:30:00",
+      "elapsed_s": 41.2,
+      "signals": 8
+    },
+    {
+      "trigger": "2026-06-29 08:30:00",
+      "elapsed_s": 47.3,
+      "signals": 9
+    },
+    {
+      "trigger": "2026-06-30 08:30:00",
+      "elapsed_s": 32.8,
+      "signals": 10
+    }
+  ]
+}
