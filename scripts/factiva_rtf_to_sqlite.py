@@ -187,7 +187,9 @@ def parse_file(path: Path):
         cur[code] = (cur[code] + "\n" + content) if code in cur else content
         if code != "AN":
             continue
-        an = re.sub(r"^Document\s+", "", cur.get("AN", "")).strip()
+        # AN 뒤에 붙은 Search Summary·인포맥스 링크형 항목 텍스트가 섞여 들어오는 것을 방지: 문서 ID 토큰만 취함
+        m_an = re.match(r"\s*(?:Document\s+)?([A-Za-z0-9]+)", cur.get("AN", ""))
+        an = m_an.group(1) if m_an else ""
         pub_date = parse_date(cur.get("PD", ""))
         if not an or not pub_date:
             skipped += 1
@@ -219,6 +221,34 @@ def parse_file(path: Path):
     return arts, skipped
 
 
+WEB_LINK = re.compile(
+    r"(?m)^[ \t]*(?P<hd>[^\n]*?)\(\"https://global\.factiva\.com/redir/[^\"]*?[?&]an=(?P<an>[A-Za-z0-9]+)[^\"]*\"\)[ \t]*\n"
+    r"(?P<src>[^\n,]+), (?:(?P<tm>\d{1,2}:\d{2}), )?(?P<dt>\d{1,2} [A-Za-z]+ \d{4}), (?P<wc>[\d,]+) words, \([^)]*\)[ \t]*\n"
+    r"(?P<lead>.*?)(?=\n[ \t]*\n|\Z)", re.S)
+
+
+def parse_web_links(path: Path, text: str = None):
+    """Article Format RTF에서 필드코드 없이 '제목(링크) / 매체, 시각, 날짜, 단어 수 / 요약' 형태로 나오는
+    Web News(연합인포맥스 등) 항목. 문서 ID는 redir 링크의 an= 파라미터에서 추출.
+    표시 시각은 KST로 보임(08:15 미 증시 마감 기사 등) → −9h 보정하지 않고 그대로 pub_dt_kst에 넣음."""
+    text = text if text is not None else read_rtf(path)
+    out = []
+    for m in WEB_LINK.finditer(text):
+        pub_date = parse_date(m["dt"])
+        if not pub_date:
+            continue
+        tm = m["tm"]
+        out.append({
+            "an": m["an"], "pub_date": pub_date,
+            "pub_time": f"{int(tm.split(':')[0]):02d}:{tm.split(':')[1]}" if tm else None,
+            "source": m["src"].strip(), "source_code": "WEBLINK",
+            "headline": _clean(m["hd"]), "summary": _clean(m["lead"]),
+            "pub_dt_kst": f"{pub_date} {int(tm.split(':')[0]):02d}:{tm.split(':')[1]}" if tm else None,
+            "co_codes": "", "ns_codes": "", "src_file": path.name,
+        })
+    return out
+
+
 # ---------------------------------------------------------------- 적재
 def connect(db: Path):
     db.parent.mkdir(parents=True, exist_ok=True)
@@ -247,6 +277,11 @@ def ingest(folders, db: Path):
             print(f"[경고] RTF 없음: {folder}")
         for f in files:
             arts, skipped = parse_file(f)
+            for w in parse_web_links(f):
+                conn.execute(
+                    f"INSERT OR IGNORE INTO factiva_webnews ({','.join(WEB_COLS)}) "
+                    f"VALUES ({','.join('?' * len(WEB_COLS))})", [dict(w, ingested_at=now)[c] for c in WEB_COLS])
+                n_web += 1
             n_files += 1
             n_skip += skipped
             for a in arts:
