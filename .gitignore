@@ -247,3 +247,14 @@ data_collection/data/
 contest_trade/data_source/data_cache/
 data_collection/kr_secrets.yaml
 data_collection/factiva/
+# KR project (DFMBA) - never commit real data, keys, or telegram sessions
+data/
+*.sqlite
+*.sqlite-journal
+*.session
+*.session-journal
+config_kr.yaml
+.env
+__pycache__/
+.venv/
+contest_trade/agents_workspace/results/
