@@ -89,7 +89,7 @@ def main():
     con.executescript(SCHEMA)
 
     for r in uni:
-        t = f(r.get("ticker")).zfill(6)
+        t = str(r["ticker"]).strip().zfill(6)
         n = collect_ticker(con, t, args.start, args.end)
         print(f"{t} {r['name_kr']}: {n} days")
         time.sleep(0.5)                       # KRX 부하 조절
